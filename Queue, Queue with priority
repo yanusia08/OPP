@@ -1,0 +1,149 @@
+#include <iostream>
+#include <string>
+#include <conio.h>
+using namespace std;
+
+struct Document
+{
+    string fileName;
+    string position;
+    int priority;
+};
+
+template <typename T>
+class Queue
+{
+    //FIFO with priority
+    T* arr;
+    int maxSize;
+    int topIndex;
+public:
+    Queue() = default;
+    Queue(int max_size)
+    {
+        this->maxSize = max_size;
+        arr = new T[maxSize];
+        topIndex = 0;
+    }
+    ~Queue()
+    {
+        if (arr != nullptr)
+            delete[]arr;
+    }
+    bool IsFull()const
+    {
+        return topIndex == maxSize;
+    }
+    void Enqueue(T elem)
+    {
+        if (!IsFull())
+        {
+            int i = topIndex - 1;
+            while (i >= 0 && elem.priority > arr[i].priority)
+            {
+                arr[i + 1] = arr[i];
+                i--;
+            }
+            arr[i + 1] = elem;
+            topIndex++;
+        }
+    }
+    bool IsEmpty()const
+    {
+        return topIndex == 0;
+    }
+    T Dequeue()
+    {
+        if (!IsEmpty())
+        {
+            T first = arr[0];
+            for (int i = 0; i < topIndex - 1; i++)
+            {
+                arr[i] = arr[i + 1];
+            }
+            topIndex--;
+            return first;
+        }
+        return T();
+    }
+    int GetCount()const
+    {
+        return topIndex;
+    }
+    void Clear()
+    {
+        topIndex = 0;
+    }
+    void Show()const
+    {
+        for (int i = 0; i < topIndex; i++)
+        {
+            cout << arr[i].fileName << " (" << arr[i].position << ", priority: " << arr[i].priority << ")" << endl;
+        }
+        cout << endl;
+    }
+};
+
+int main()
+{
+    Queue<Document> q(15);
+    int choice;
+
+    while (true)
+    {
+        system("cls");
+        cout << "1. Add document" << endl;
+        cout << "2. Print document" << endl;
+        cout << "3. Show queue" << endl;
+        cout << "0. Exit" << endl;
+        cout << "Your choice: ";
+        cin >> choice;
+
+        if (choice == 0)
+            break;
+
+        if (choice == 1)
+        {
+            Document doc;
+            int pos;
+            cout << "Enter file name: ";
+            cin >> doc.fileName;
+            cout << "Choose your role (1 - Guest, 2 - Admin, 3 - Manager, 4 - Director): ";
+            cin >> pos;
+
+            switch (pos)
+            {
+            case 1: doc.position = "Guest"; doc.priority = 1; break;
+            case 2: doc.position = "Admin"; doc.priority = 2; break;
+            case 3: doc.position = "Manager"; doc.priority = 3; break;
+            case 4: doc.position = "Director"; doc.priority = 4; break;
+            default: doc.position = "Guest"; doc.priority = 1; break;
+            }
+
+            q.Enqueue(doc);
+            cout << "Document added!" << endl;
+            _getch();
+        }
+        else if (choice == 2)
+        {
+            if (!q.IsEmpty())
+            {
+                Document d = q.Dequeue();
+                cout << "Printing file: " << d.fileName << " | Role: " << d.position << " | Priority: " << d.priority << endl;
+            }
+            else
+            {
+                cout << "Queue is empty!" << endl;
+            }
+            _getch();
+        }
+        else if (choice == 3)
+        {
+            cout << "Size : " << q.GetCount() << endl;
+            q.Show();
+            _getch();
+        }
+    }
+
+    return 0;
+}
