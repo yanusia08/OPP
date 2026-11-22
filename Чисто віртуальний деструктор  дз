@@ -1,0 +1,185 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+void gotoxy(int x, int y)
+{
+	COORD coord;
+	coord.X = x;
+	coord.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
+
+struct Point
+{
+	int x;
+	int y;
+	Point() : x(0), y(0) {}
+	Point(int x, int y) : x(x), y(y) {}
+};
+
+class Shape
+{
+protected:
+	string type;
+public:
+	Shape() : type("no type") {}
+	Shape(string type) : type(type) {}
+
+	virtual void Print()const = 0;
+	virtual void Save(ofstream& out)const = 0;
+	virtual ~Shape() {}
+};
+
+class Line : public Shape
+{
+	Point start;
+	Point end;
+public:
+	Line() : start(0, 0), end(0, 0), Shape("Line") {}
+	Line(Point s, Point e) : start(s), end(e), Shape("Line") {}
+
+	void Print()const override
+	{
+		int x1 = start.x;
+		int y1 = start.y;
+		int x2 = end.x;
+		int y2 = end.y;
+
+		int dx = abs(x2 - x1);
+		int dy = abs(y2 - y1);
+		int sx = (x1 < x2) ? 1 : -1;
+		int sy = (y1 < y2) ? 1 : -1;
+		int err = dx - dy;
+
+		while (true)
+		{
+			gotoxy(x1, y1);
+			cout << "*";
+			if (x1 == x2 && y1 == y2) break;
+			int e2 = 2 * err;
+			if (e2 > -dy)
+			{
+				err -= dy;
+				x1 += sx;
+			}
+			if (e2 < dx)
+			{
+				err += dx;
+				y1 += sy;
+			}
+		}
+	}
+
+	void Save(ofstream& out)const override
+	{
+		out << type << " : Start(" << start.x << ", " << start.y
+			<< ") End(" << end.x << ", " << end.y << ")" << endl;
+	}
+};
+
+class RectangleShape : public Shape
+{
+	Point topLeft;
+	int width;
+	int height;
+public:
+	RectangleShape() : topLeft(0, 0), width(0), height(0), Shape("Rectangle") {}
+	RectangleShape(Point tl, int w, int h) : topLeft(tl), width(w), height(h), Shape("Rectangle") {}
+
+	void Print()const override
+	{
+		for (int i = 0; i < height; i++)
+		{
+			for (int j = 0; j < width; j++)
+			{
+				if (i == 0 || i == height - 1 || j == 0 || j == width - 1)
+				{
+					gotoxy(topLeft.x + j, topLeft.y + i);
+					cout << "#";
+				}
+			}
+		}
+	}
+
+	void Save(ofstream& out)const override
+	{
+		out << type << " : TopLeft(" << topLeft.x << ", " << topLeft.y
+			<< ") Width=" << width << " Height=" << height << endl;
+	}
+};
+
+class PolylineShape : public Shape
+{
+	Point* points;
+	int countPoints;
+public:
+	PolylineShape() : points(nullptr), countPoints(0), Shape("Polyline") {}
+	PolylineShape(initializer_list<Point> list) : Shape("Polyline")
+	{
+		countPoints = list.size();
+		points = new Point[countPoints];
+		int i = 0;
+		for (Point p : list)
+		{
+			points[i] = p;
+			i++;
+		}
+	}
+
+	void Print()const override
+	{
+		for (int i = 0; i < countPoints - 1; i++)
+		{
+			Line segment(points[i], points[i + 1]);
+			segment.Print();
+		}
+	}
+
+	void Save(ofstream& out)const override
+	{
+		out << type << " : ";
+		for (int i = 0; i < countPoints; i++)
+		{
+			out << "(" << points[i].x << ", " << points[i].y << ") ";
+		}
+		out << endl;
+	}
+
+	~PolylineShape()
+	{
+		if (points != nullptr)
+			delete[] points;
+	}
+};
+
+int main()
+{
+	Shape* shapes[3]
+	{
+		new Line(Point(2, 1), Point(15, 5)),
+		new RectangleShape(Point(20, 1), 12, 6),
+		new PolylineShape({ Point(2, 9), Point(10, 14), Point(20, 10), Point(30, 14) })
+	};
+
+	ofstream out("shapes.txt");
+
+	for (int i = 0; i < 3; i++)
+	{
+		shapes[i]->Print();
+		Beep(500, 100);
+		if (out.is_open())
+		{
+			shapes[i]->Save(out);
+		}
+		delete shapes[i];
+	}
+
+	out.close();
+	gotoxy(0, 18);
+	cout << "Shapes saved to shapes.txt" << endl;
+
+	return 0;
+}
