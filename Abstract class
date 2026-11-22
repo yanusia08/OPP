@@ -1,0 +1,172 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Employer
+{
+protected:
+	string name;
+	int age;
+public:
+	Employer() : name("no name"), age(0) {}
+	Employer(string n, int a) : name(n), age(a) {}
+	virtual void Print()const = 0;
+};
+
+class President : public Employer
+{
+	string company;
+public:
+	President() : company("no company"), Employer() {}
+	President(string n, int a, string c) : company(c), Employer(n, a) {}
+	void Print()const override
+	{
+		cout << "---------------President----------------" << endl;
+		cout << "Name : " << name << endl;
+		cout << "Age : " << age << endl;
+		cout << "Company : " << company << endl;
+	}
+};
+
+class Manager : public Employer
+{
+	string department;
+public:
+	Manager() : department("no department"), Employer() {}
+	Manager(string n, int a, string d) : department(d), Employer(n, a) {}
+	void Print()const override
+	{
+		cout << "---------------Manager------------------" << endl;
+		cout << "Name : " << name << endl;
+		cout << "Age : " << age << endl;
+		cout << "Department : " << department << endl;
+	}
+};
+
+class Worker : public Employer
+{
+	string specialty;
+public:
+	Worker() : specialty("no specialty"), Employer() {}
+	Worker(string n, int a, string s) : specialty(s), Employer(n, a) {}
+	void Print()const override
+	{
+		cout << "---------------Worker-------------------" << endl;
+		cout << "Name : " << name << endl;
+		cout << "Age : " << age << endl;
+		cout << "Specialty : " << specialty << endl;
+	}
+};
+
+class Transport
+{
+protected:
+	string name;
+	float speed;
+	float pricePerKm;
+public:
+	Transport() : name("no name"), speed(0), pricePerKm(0) {}
+	Transport(string n, float s, float p) : name(n), speed(s), pricePerKm(p) {}
+
+	virtual float GetTime(float distance)const
+	{
+		if (speed > 0)
+			return distance / speed;
+		return 0;
+	}
+
+	virtual float GetCost(float distance, int passengers, float cargoWeight)const = 0;
+
+	virtual void Show()const
+	{
+		cout << "Transport : " << name << endl;
+		cout << "Speed : " << speed << " km/h" << endl;
+	}
+};
+
+class Car : public Transport
+{
+public:
+	Car() : Transport("Car", 80, 5.0) {}
+	Car(string n, float s, float p) : Transport(n, s, p) {}
+
+	float GetCost(float distance, int passengers, float cargoWeight)const override
+	{
+		return distance * pricePerKm + passengers * 10 + cargoWeight * 2;
+	}
+
+	void Show()const override
+	{
+		cout << "---------------Car----------------------" << endl;
+		Transport::Show();
+	}
+};
+
+class Bicycle : public Transport
+{
+public:
+	Bicycle() : Transport("Bicycle", 20, 1.0) {}
+	Bicycle(string n, float s, float p) : Transport(n, s, p) {}
+
+	float GetCost(float distance, int passengers, float cargoWeight)const override
+	{
+		return distance * pricePerKm + passengers * 2 + cargoWeight * 1;
+	}
+
+	void Show()const override
+	{
+		cout << "---------------Bicycle------------------" << endl;
+		Transport::Show();
+	}
+};
+
+class Cart : public Transport
+{
+public:
+	Cart() : Transport("Cart", 10, 2.5) {}
+	Cart(string n, float s, float p) : Transport(n, s, p) {}
+
+	float GetCost(float distance, int passengers, float cargoWeight)const override
+	{
+		return distance * pricePerKm + passengers * 5 + cargoWeight * 1.5;
+	}
+
+	void Show()const override
+	{
+		cout << "---------------Cart---------------------" << endl;
+		Transport::Show();
+	}
+};
+
+void CalculateTrip(Transport& t, float distance, int passengers, float cargoWeight)
+{
+	t.Show();
+	cout << "Distance : " << distance << " km" << endl;
+	cout << "Passengers : " << passengers << ", Cargo : " << cargoWeight << " kg" << endl;
+	cout << "Time : " << t.GetTime(distance) << " hours" << endl;
+	cout << "Cost : " << t.GetCost(distance, passengers, cargoWeight) << " UAH" << endl;
+	cout << endl;
+}
+
+int main()
+{
+	President president("Oleh Bondar", 45, "StarTech");
+	Manager manager("Iryna Savchuk", 32, "Sales");
+	Worker worker("Petro Koval", 28, "Builder");
+
+	president.Print();
+	manager.Print();
+	worker.Print();
+
+	cout << endl;
+
+	Car car("Sedan", 90, 6.0);
+	Bicycle bicycle("City Bike", 20, 0.5);
+	Cart cart("Wooden Cart", 12, 3.0);
+
+	CalculateTrip(car, 180, 3, 50);
+	CalculateTrip(bicycle, 40, 1, 10);
+	CalculateTrip(cart, 36, 2, 100);
+
+	return 0;
+}
