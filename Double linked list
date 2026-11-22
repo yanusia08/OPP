@@ -1,0 +1,230 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+template<typename T>
+class List
+{
+    struct Node
+    {
+        Node* prev;
+        T value;
+        Node* next;
+        Node() : prev(nullptr), value(T()), next(nullptr) {}
+        Node(Node* p, T v, Node* n) : prev(p), value(v), next(n) {}
+    };
+
+private:
+    Node* head;
+    Node* tail;
+public:
+    List()
+    {
+        head = tail = nullptr;
+    }
+    List(const List& other)
+    {
+        head = tail = nullptr;
+        for (Node* i = other.head; i != nullptr; i = i->next)
+        {
+            AddToTail(i->value);
+        }
+    }
+    List& operator=(const List& other)
+    {
+        if (this == &other) return *this;
+        while (!IsEmpty())
+        {
+            DeleteFromHead();
+        }
+        for (Node* i = other.head; i != nullptr; i = i->next)
+        {
+            AddToTail(i->value);
+        }
+        return *this;
+    }
+    bool IsEmpty()const
+    {
+        return head == nullptr;
+    }
+    void AddToHead(T value)
+    {
+        Node* newNode = new Node(nullptr, value, head);
+
+        if (IsEmpty())
+        {
+            head = tail = newNode;
+        }
+        else
+        {
+            head->prev = newNode;
+            head = newNode;
+        }
+    }
+    void Print()const
+    {
+        for (Node* i = head; i != nullptr; i = i->next)
+        {
+            cout << i->value << " ";
+        }
+        cout << endl;
+    }
+    ~List()
+    {
+        Node* current = nullptr;
+        while (head != nullptr)
+        {
+            current = head;
+            head = head->next;
+            delete current;
+        }
+    }
+    void AddToTail(T value)
+    {
+        Node* newNode = new Node(tail, value, nullptr);
+        if (IsEmpty())
+        {
+            head = tail = newNode;
+        }
+        else
+        {
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+    void DeleteFromHead()
+    {
+        if (IsEmpty()) return;
+        if (head->next == nullptr)
+        {
+            delete head;
+            head = tail = nullptr;
+        }
+        else
+        {
+            head = head->next;
+            delete head->prev;
+            head->prev = nullptr;
+        }
+    }
+    void DeleteFromTail()
+    {
+        if (IsEmpty()) return;
+        if (tail->prev == nullptr)
+        {
+            delete head;
+            head = tail = nullptr;
+        }
+        else
+        {
+            tail = tail->prev;
+            delete tail->next;
+            tail->next = nullptr;
+        }
+    }
+};
+
+struct Vagon
+{
+    int number;
+    int places;
+    int passengers;
+
+    Vagon() : number(0), places(0), passengers(0) {}
+    Vagon(int num, int pl, int pass) : number(num), places(pl), passengers(pass) {}
+
+    friend ostream& operator<<(ostream& out, const Vagon& v)
+    {
+        out << "[Vagon #" << v.number << " | Places: " << v.places << " | Passengers: " << v.passengers << "]";
+        return out;
+    }
+};
+
+class Train
+{
+    string model;
+    List<Vagon> vagons;
+    int countVagons;
+public:
+    Train() : model("NoModel"), countVagons(0) {}
+
+    Train(string model) : model(model), countVagons(0) {}
+
+    Train(const Train& other)
+    {
+        this->model = other.model;
+        this->countVagons = other.countVagons;
+        this->vagons = other.vagons;
+    }
+
+    void AddVagonToHead(Vagon v)
+    {
+        vagons.AddToHead(v);
+        countVagons++;
+    }
+
+    void AddVagonToTail(Vagon v)
+    {
+        vagons.AddToTail(v);
+        countVagons++;
+    }
+
+    void DeleteVagonFromHead()
+    {
+        if (!vagons.IsEmpty())
+        {
+            vagons.DeleteFromHead();
+            countVagons--;
+        }
+    }
+
+    void DeleteVagonFromTail()
+    {
+        if (!vagons.IsEmpty())
+        {
+            vagons.DeleteFromTail();
+            countVagons--;
+        }
+    }
+
+    void Show()const
+    {
+        cout << "Train model: " << model << endl;
+        cout << "Count of vagons: " << countVagons << endl;
+        cout << "Vagons: ";
+        vagons.Print();
+        cout << endl;
+    }
+};
+
+int main()
+{
+    
+    List<int> l;
+    l.AddToTail(10);
+    l.AddToTail(20);
+    l.AddToTail(30);
+    l.Print();
+    l.DeleteFromHead();
+    l.Print();
+    l.DeleteFromTail();
+    l.Print();
+
+    cout << "----------------------------------------" << endl;
+
+   
+    Train t1("StarExpress-700");
+    t1.AddVagonToTail(Vagon(1, 54, 42));
+    t1.AddVagonToTail(Vagon(2, 64, 59));
+    t1.AddVagonToHead(Vagon(0, 36, 18));
+    t1.Show();
+
+   
+    Train t2(t1);
+    t2.DeleteVagonFromHead();
+    t2.DeleteVagonFromTail();
+    cout << "Copied and modified train:" << endl;
+    t2.Show();
+
+    return 0;
+}
