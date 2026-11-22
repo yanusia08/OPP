@@ -1,0 +1,131 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Student
+{
+protected:
+	string name;
+	string group;
+	int age;
+public:
+	Student() : name("no name"), group("no group"), age(0) {}
+	Student(string name, string group, int age) : name(name), group(group), age(age) {}
+
+	void Print()const
+	{
+		cout << "Name : " << name << endl;
+		cout << "Group : " << group << endl;
+		cout << "Age : " << age << endl;
+	}
+};
+
+class Aspirant : public Student
+{
+	string topic;
+	int pages;
+	bool isDefended;
+public:
+	Aspirant() : topic("no topic"), pages(0), isDefended(false), Student() {}
+	Aspirant(string n, string g, int a, string t, int p)
+		: topic(t), pages(p), isDefended(false), Student(n, g, a) {}
+
+	void WriteDissertation(int addPages)
+	{
+		pages += addPages;
+		cout << name << " wrote " << addPages << " pages. Total pages : " << pages << endl;
+	}
+
+	void DefendDissertation()
+	{
+		if (pages >= 100)
+		{
+			isDefended = true;
+			cout << name << " defended the dissertation!" << endl;
+		}
+		else
+		{
+			cout << "Not enough pages to defend! Need 100, now : " << pages << endl;
+		}
+	}
+
+	void Print()const
+	{
+		cout << "--------------------Aspirant----------------" << endl;
+		Student::Print();
+		cout << "Topic : " << topic << endl;
+		cout << "Pages : " << pages << endl;
+		cout << "Defended : " << (isDefended ? "Yes" : "No") << endl;
+	}
+};
+
+class Passport
+{
+protected:
+	string fullName;
+	string birthDate;
+	string passportNumber;
+public:
+	Passport() : fullName("no name"), birthDate("01.01.2000"), passportNumber("000000") {}
+	Passport(string name, string date, string number)
+		: fullName(name), birthDate(date), passportNumber(number) {}
+
+	void Print()const
+	{
+		cout << "Full name : " << fullName << endl;
+		cout << "Birth date : " << birthDate << endl;
+		cout << "Passport number : " << passportNumber << endl;
+	}
+};
+
+class ForeignPassport : public Passport
+{
+	string foreignNumber;
+	string visas;
+public:
+	ForeignPassport() : foreignNumber("XX000000"), visas("No visas"), Passport() {}
+	ForeignPassport(string name, string date, string number, string fNum, string v)
+		: foreignNumber(fNum), visas(v), Passport(name, date, number) {}
+
+	void AddVisa(string newVisa)
+	{
+		if (visas == "No visas")
+			visas = newVisa;
+		else
+			visas += ", " + newVisa;
+	}
+
+	void Print()const
+	{
+		cout << "----------------Foreign Passport------------" << endl;
+		Passport::Print();
+		cout << "Foreign number : " << foreignNumber << endl;
+		cout << "Visas : " << visas << endl;
+	}
+};
+
+int main()
+{
+	Student st("Olenka Koval", "CS-21", 19);
+	cout << "--------------------Student-----------------" << endl;
+	st.Print();
+
+	Aspirant asp("Taras Melnyk", "ASP-01", 24, "AI Systems", 75);
+	asp.Print();
+	asp.DefendDissertation();
+	asp.WriteDissertation(30);
+	asp.DefendDissertation();
+	asp.Print();
+
+	cout << endl;
+
+	Passport p("Ivan Petrenko", "15.05.1998", "UA123456");
+	cout << "--------------------Passport----------------" << endl;
+	p.Print();
+
+	ForeignPassport fp("Ivan Petrenko", "15.05.1998", "UA123456", "FP987654", "Poland");
+	fp.AddVisa("Germany");
+	fp.Print();
+
+	return 0;
+}
