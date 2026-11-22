@@ -299,52 +299,18 @@ int main()
 		cout << ex.what() << endl;
 	}
 
-	list.AddToTail(10);
-	list.AddToTail(20);
-	list.AddToHead(5);
-	list.Print();
-
-	try
-	{
-		list.InsertByPos(10, 99);
-	}
-	catch (InvalidPositionException ex)
-	{
-		ex.Message();
-	}
-
-	try
-	{
-		cout << list.GetElementByPos(-2) << endl;
-	}
-	catch (out_of_range ex)
-	{
-		cout << ex.what() << endl;
-	}
-	catch (logic_error ex)
-	{
-		cout << ex.what() << endl;
-	}
-	catch (exception ex)
-	{
-		cout << ex.what() << endl;
-	}
-	catch (...)
-	{
-		cout << "Unknown exception" << endl;
-	}
-
 	char input[100];
 
 	for (int i = 0; i < 4; i++)
 	{
-		cout << "Enter number string : ";
+		cout << "Enter number string to add to list : ";
 		cin >> input;
 
 		try
 		{
 			int number = StringToInt(input);
-			cout << "Converted int : " << number << endl;
+			list.AddToTail(number);
+			cout << "Added : " << number << endl;
 		}
 		catch (InvalidNumberFormatException ex)
 		{
@@ -366,5 +332,40 @@ int main()
 		{
 			cout << "Unknown exception" << endl;
 		}
+	}
+
+	try
+	{
+		list.Print();
+		list.InsertByPos(10, 99);
+	}
+	catch (InvalidPositionException ex)
+	{
+		ex.Message();
+	}
+	catch (logic_error ex)
+	{
+		cout << ex.what() << endl;
+	}
+
+	try
+	{
+		cout << list.GetElementByPos(-2) << endl;
+	}
+	catch (EmptyListException ex)
+	{
+		cout << ex.what() << endl;
+	}
+	catch (out_of_range ex)
+	{
+		cout << ex.what() << endl;
+	}
+	catch (exception ex)
+	{
+		cout << ex.what() << endl;
+	}
+	catch (...)
+	{
+		cout << "Unknown exception" << endl;
 	}
 }
