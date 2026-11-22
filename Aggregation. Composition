@@ -1,0 +1,188 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Engine
+{
+	float volume;
+	int horsePower;
+public:
+	Engine() : volume(0), horsePower(0) {}
+	Engine(float v, int hp) : volume(v), horsePower(hp) {}
+
+	void Print()const
+	{
+		cout << "Engine : volume = " << volume << "L, power = " << horsePower << " HP" << endl;
+	}
+};
+
+class Wheel
+{
+	int radius;
+	string season;
+public:
+	Wheel() : radius(0), season("no season") {}
+	Wheel(int r, string s) : radius(r), season(s) {}
+
+	void Print()const
+	{
+		cout << "Wheel : R" << radius << ", season = " << season << endl;
+	}
+};
+
+class Door
+{
+	string side;
+	bool hasWindow;
+public:
+	Door() : side("none"), hasWindow(false) {}
+	Door(string s, bool w) : side(s), hasWindow(w) {}
+
+	void Print()const
+	{
+		cout << "Door (" << side << ") : window = " << (hasWindow ? "Yes" : "No") << endl;
+	}
+};
+
+class Body
+{
+	string type;
+	string color;
+public:
+	Body() : type("no type"), color("no color") {}
+	Body(string t, string c) : type(t), color(c) {}
+
+	void Print()const
+	{
+		cout << "Body : type = " << type << ", color = " << color << endl;
+	}
+};
+
+class Headlight
+{
+	string lampType;
+	int brightness;
+public:
+	Headlight() : lampType("none"), brightness(0) {}
+	Headlight(string t, int b) : lampType(t), brightness(b) {}
+
+	void Print()const
+	{
+		cout << "Headlight : type = " << lampType << ", brightness = " << brightness << " lm" << endl;
+	}
+};
+
+class Driver
+{
+	string name;
+	int experience;
+public:
+	Driver() : name("no name"), experience(0) {}
+	Driver(string n, int exp) : name(n), experience(exp) {}
+
+	void Print()const
+	{
+		cout << "Driver : " << name << ", experience = " << experience << " years" << endl;
+	}
+};
+
+class Car
+{
+	string model;
+	Headlight lights[2];
+	Door doors[4];
+	Engine engine;
+	Wheel wheels[4];
+	Body body;
+	Driver* driver;
+
+public:
+	Car() : model("none"), driver(nullptr) {}
+
+	Car(string m, float engVol, int engHp, string bodyType, string bodyColor, int wheelR, string wheelSeason, string lightType, int lightBright)
+		: model(m), engine(engVol, engHp), body(bodyType, bodyColor), driver(nullptr)
+	{
+		lights[0] = Headlight(lightType, lightBright);
+		lights[1] = Headlight(lightType, lightBright);
+
+		doors[0] = Door("Front Left", true);
+		doors[1] = Door("Front Right", true);
+		doors[2] = Door("Rear Left", true);
+		doors[3] = Door("Rear Right", true);
+
+		for (int i = 0; i < 4; i++)
+		{
+			wheels[i] = Wheel(wheelR, wheelSeason);
+		}
+	}
+
+	void Print()const
+	{
+		cout << "-------------------- Car : " << model << " --------------------" << endl;
+		engine.Print();
+		body.Print();
+
+		for (int i = 0; i < 2; i++)
+		{
+			lights[i].Print();
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			doors[i].Print();
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			wheels[i].Print();
+		}
+
+		if (driver != nullptr)
+		{
+			driver->Print();
+		}
+		else
+		{
+			cout << "Driver : No driver" << endl;
+		}
+		cout << endl;
+	}
+
+	void AggregateDriver(Driver* d)
+	{
+		this->driver = d;
+	}
+
+	bool RemoveDriver()
+	{
+		if (driver != nullptr)
+		{
+			driver = nullptr;
+			return true;
+		}
+		return false;
+	}
+};
+
+int main()
+{
+	Car car("StarSedan S5", 2.0, 190, "Sedan", "Black", 17, "Summer", "LED", 3500);
+	car.Print();
+
+	Driver driver1("Andrii Koval", 7);
+	Driver driver2("Olena Bondar", 3);
+
+	car.AggregateDriver(&driver1);
+	car.Print();
+
+	car.AggregateDriver(&driver2);
+	car.Print();
+
+	if (car.RemoveDriver())
+	{
+		cout << "Driver removed from car." << endl;
+	}
+	car.Print();
+
+	return 0;
+}
