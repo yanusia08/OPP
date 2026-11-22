@@ -1,0 +1,154 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Shape
+{
+protected:
+	string name;
+	string type;
+public:
+	Shape() : name("no name"), type("no type") {}
+	Shape(string name, string type) : name(name), type(type) {}
+
+	virtual void Show()const
+	{
+		cout << "---------------Shape----------------" << endl;
+		cout << "Name : " << name << endl;
+		cout << "Type : " << type << endl;
+	}
+
+	virtual double GetArea()const
+	{
+		return 0;
+	}
+};
+
+class Rectangle : public Shape
+{
+	double width;
+	double height;
+public:
+	Rectangle() : width(0), height(0), Shape("no name", "Rectangle") {}
+	Rectangle(string n, double w, double h) : width(w), height(h), Shape(n, "Rectangle") {}
+
+	void Show()const override
+	{
+		Shape::Show();
+		cout << "Width : " << width << endl;
+		cout << "Height : " << height << endl;
+	}
+
+	double GetArea()const override
+	{
+		return width * height;
+	}
+};
+
+class Circle : public Shape
+{
+	double radius;
+public:
+	Circle() : radius(0), Shape("no name", "Circle") {}
+	Circle(string n, double r) : radius(r), Shape(n, "Circle") {}
+
+	void Show()const override
+	{
+		Shape::Show();
+		cout << "Radius : " << radius << endl;
+	}
+
+	double GetArea()const override
+	{
+		return 3.14 * radius * radius;
+	}
+};
+
+class RightTriangle : public Shape
+{
+	double a;
+	double b;
+public:
+	RightTriangle() : a(0), b(0), Shape("no name", "Right Triangle") {}
+	RightTriangle(string n, double a, double b) : a(a), b(b), Shape(n, "Right Triangle") {}
+
+	void Show()const override
+	{
+		Shape::Show();
+		cout << "Side A : " << a << endl;
+		cout << "Side B : " << b << endl;
+	}
+
+	double GetArea()const override
+	{
+		return 0.5 * a * b;
+	}
+};
+
+class Triangle : public Shape
+{
+	double base;
+	double height;
+public:
+	Triangle() : base(0), height(0), Shape("no name", "Triangle") {}
+	Triangle(string n, double b, double h) : base(b), height(h), Shape(n, "Triangle") {}
+
+	void Show()const override
+	{
+		Shape::Show();
+		cout << "Base : " << base << endl;
+		cout << "Height : " << height << endl;
+	}
+
+	double GetArea()const override
+	{
+		return 0.5 * base * height;
+	}
+};
+
+class Trapezoid : public Shape
+{
+	double a;
+	double b;
+	double height;
+public:
+	Trapezoid() : a(0), b(0), height(0), Shape("no name", "Trapezoid") {}
+	Trapezoid(string n, double a, double b, double h) : a(a), b(b), height(h), Shape(n, "Trapezoid") {}
+
+	void Show()const override
+	{
+		Shape::Show();
+		cout << "Base A : " << a << endl;
+		cout << "Base B : " << b << endl;
+		cout << "Height : " << height << endl;
+	}
+
+	double GetArea()const override
+	{
+		return (a + b) / 2.0 * height;
+	}
+};
+
+void TestShape(const Shape& shape)
+{
+	shape.Show();
+	cout << "Area : " << shape.GetArea() << endl;
+	cout << endl;
+}
+
+int main()
+{
+	Rectangle rect("Box", 5, 10);
+	Circle circle("Sun", 4);
+	RightTriangle rTriangle("Corner", 3, 4);
+	Triangle triangle("Pyramid", 6, 8);
+	Trapezoid trapezoid("Roof", 4, 8, 5);
+
+	TestShape(rect);
+	TestShape(circle);
+	TestShape(rTriangle);
+	TestShape(triangle);
+	TestShape(trapezoid);
+
+	return 0;
+}
