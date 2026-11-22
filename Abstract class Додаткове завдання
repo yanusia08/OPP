@@ -1,0 +1,87 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Animal
+{
+protected:
+	string name;
+	string place;
+	int age;
+	int maxAge;
+	bool isAlive;
+public:
+	Animal() : name("no name"), place("no place"), age(0), maxAge(10), isAlive(true) {}
+	Animal(string n, string p, int a, int mAge) : name(n), place(p), age(a), maxAge(mAge), isAlive(true) {}
+
+	bool IsAlive()const
+	{
+		return isAlive;
+	}
+
+	void GrowOlder()
+	{
+		if (!isAlive) return;
+		age++;
+		if (age >= maxAge)
+		{
+			Die();
+		}
+	}
+
+	virtual void Die()
+	{
+		isAlive = false;
+		cout << name << " died at age " << age << endl;
+	}
+
+	virtual void Show()const
+	{
+		cout << "Name : " << name << " | Place : " << place << " | Age : " << age << " | Alive : " << (isAlive ? "Yes" : "No") << endl;
+	}
+};
+
+class Plant
+{
+protected:
+	string name;
+	string place;
+	bool isEaten;
+public:
+	Plant() : name("no plant"), place("no place"), isEaten(false) {}
+	Plant(string n, string p) : name(n), place(p), isEaten(false) {}
+
+	bool IsEaten()const
+	{
+		return isEaten;
+	}
+
+	void GetEaten()
+	{
+		isEaten = true;
+	}
+
+	virtual void Show()const
+	{
+		cout << "Plant : " << name << " | Place : " << place << " | Eaten : " << (isEaten ? "Yes" : "No") << endl;
+	}
+};
+
+class Grass : public Plant
+{
+public:
+	Grass() : Plant("Grass", "Forest") {}
+	Grass(string p) : Plant("Grass", p) {}
+};
+
+class Rabbit : public Animal
+{
+public:
+	Rabbit() : Animal("Rabbit", "Forest", 0, 5) {}
+	Rabbit(string n, string p, int a) : Animal(n, p, a, 5) {}
+
+	void Eat(Grass& g)
+	{
+		if (isAlive && !g.IsEaten())
+		{
+			g.GetEaten();
