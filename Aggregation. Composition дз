@@ -1,0 +1,228 @@
+#include <iostream>
+#include <string>
+#include <Windows.h>
+using namespace std;
+
+class Engine
+{
+	float volume;
+	int horsePower;
+public:
+	Engine() : volume(0), horsePower(0) {}
+	Engine(float v, int hp) : volume(v), horsePower(hp) {}
+
+	void Show()const
+	{
+		cout << "Engine : volume = " << volume << "L, power = " << horsePower << " HP" << endl;
+	}
+};
+
+class Wheel
+{
+	int radius;
+	string season;
+public:
+	Wheel() : radius(0), season("no season") {}
+	Wheel(int r, string s) : radius(r), season(s) {}
+
+	void Show()const
+	{
+		cout << "Wheel : R" << radius << ", season = " << season << endl;
+	}
+};
+
+class Door
+{
+	string side;
+	bool hasWindow;
+public:
+	Door() : side("none"), hasWindow(false) {}
+	Door(string s, bool w) : side(s), hasWindow(w) {}
+
+	void Show()const
+	{
+		cout << "Door (" << side << ") : window = " << (hasWindow ? "Yes" : "No") << endl;
+	}
+};
+
+class Body
+{
+	string type;
+	string color;
+public:
+	Body() : type("no type"), color("no color") {}
+	Body(string t, string c) : type(t), color(c) {}
+
+	void Show()const
+	{
+		cout << "Body : type = " << type << ", color = " << color << endl;
+	}
+};
+
+class Headlight
+{
+	string lampType;
+	int brightness;
+public:
+	Headlight() : lampType("none"), brightness(0) {}
+	Headlight(string t, int b) : lampType(t), brightness(b) {}
+
+	void Show()const
+	{
+		cout << "Headlight : type = " << lampType << ", brightness = " << brightness << " lm" << endl;
+	}
+};
+
+class Driver
+{
+	string firstName;
+	string lastName;
+	int age;
+	int experience;
+public:
+	Driver() : firstName("no name"), lastName("no surname"), age(0), experience(0) {}
+	Driver(string fName, string lName, int a, int exp)
+		: firstName(fName), lastName(lName), age(a), experience(exp) {
+	}
+
+	void Show()const
+	{
+		cout << "Driver : " << firstName << " " << lastName
+			<< ", age = " << age << ", experience = " << experience << " years" << endl;
+	}
+};
+
+class Car
+{
+	string model;
+	Headlight lights[2];
+	Door doors[4];
+	Engine engine;
+	Wheel wheels[4];
+	Body body;
+	Driver* driver;
+
+public:
+	Car() : model("none"), driver(nullptr) {}
+
+	Car(string m, float engVol, int engHp, string bodyType, string bodyColor, int wheelR, string wheelSeason, string lightType, int lightBright)
+		: model(m), engine(engVol, engHp), body(bodyType, bodyColor), driver(nullptr)
+	{
+		lights[0] = Headlight(lightType, lightBright);
+		lights[1] = Headlight(lightType, lightBright);
+
+		doors[0] = Door("Front Left", true);
+		doors[1] = Door("Front Right", true);
+		doors[2] = Door("Rear Left", true);
+		doors[3] = Door("Rear Right", true);
+
+		for (int i = 0; i < 4; i++)
+		{
+			wheels[i] = Wheel(wheelR, wheelSeason);
+		}
+	}
+
+	Car(string m, float engVol, int engHp, string bodyType, string bodyColor, int wheelR, string wheelSeason, string lightType, int lightBright, Driver* d)
+		: model(m), engine(engVol, engHp), body(bodyType, bodyColor), driver(d)
+	{
+		lights[0] = Headlight(lightType, lightBright);
+		lights[1] = Headlight(lightType, lightBright);
+
+		doors[0] = Door("Front Left", true);
+		doors[1] = Door("Front Right", true);
+		doors[2] = Door("Rear Left", true);
+		doors[3] = Door("Rear Right", true);
+
+		for (int i = 0; i < 4; i++)
+		{
+			wheels[i] = Wheel(wheelR, wheelSeason);
+		}
+	}
+
+	void AddDriver(Driver* d)
+	{
+		this->driver = d;
+	}
+
+	void Drive()const
+	{
+		if (driver != nullptr)
+		{
+			cout << "Car " << model << " is driving!" << endl;
+			Beep(600, 150);
+		}
+		else
+		{
+			cout << "No driver! Car cannot move." << endl;
+		}
+	}
+
+	void Honk()const
+	{
+		if (driver != nullptr)
+		{
+			cout << "Beep-beep!" << endl;
+			Beep(400, 150);
+			Beep(400, 250);
+		}
+		else
+		{
+			cout << "No driver to honk!" << endl;
+		}
+	}
+
+	void Show()const
+	{
+		cout << "-------------------- Car : " << model << " --------------------" << endl;
+		engine.Show();
+		body.Show();
+
+		for (int i = 0; i < 2; i++)
+		{
+			lights[i].Show();
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			doors[i].Show();
+		}
+
+		for (int i = 0; i < 4; i++)
+		{
+			wheels[i].Show();
+		}
+
+		if (driver != nullptr)
+		{
+			driver->Show();
+		}
+		else
+		{
+			cout << "Driver : No driver in the car!" << endl;
+		}
+		cout << endl;
+	}
+};
+
+int main()
+{
+	Driver driver1("Andrii", "Koval", 32, 10);
+	Driver driver2("Olena", "Bondar", 27, 5);
+
+	Car car1("StarSedan S5", 2.0, 190, "Sedan", "Black", 17, "Summer", "LED", 3500);
+	car1.Show();
+	car1.Drive();
+
+	car1.AddDriver(&driver1);
+	car1.Show();
+	car1.Drive();
+	car1.Honk();
+
+	cout << endl;
+
+	Car car2("NovaCross X3", 2.5, 220, "Crossover", "White", 18, "All-Season", "Xenon", 4000, &driver2);
+	car2.Show();
+	car2.Drive();
+
+	return 0;
+}
